@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>From println to logging industrialization</title>
+
+		<meta name="description" content="Lightning talk on logging at scale">
+		<meta name="author" content="Christophe Mosa">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Logs</h1>
+					<h3>From <code>printf</code> to logging indusrialization</h3>
+					<p>
+						<small>Christophe Mosa</small>
+					</p>
+				</section>
+
+				<section>
+					<h2>Disclaimers</h2>
+					<p>(what I try not to talk about)</p>
+					<ul>
+						<li>Me</li>
+						<li>My company</li>
+						<li>Debugging</li>
+						<li>Buzzwords</li>
+						<li>System logs, nagios, mrtg...</li>
+					</ul>
+				</section>
+
+
+
+				<section>
+					<h2>Storage is cheap</h2>
+					<div class="fragment">
+					<h1>... very cheap ...</h1>
+					<p>1995: $500/GB</p>
+					<p>2000: $10/GB</p>
+					<p>Today: $0.04/GB</p>
+				</div>
+
+				</section>
+
+				<section>
+					<h2>Computing</h2>
+					<div class="fragment">
+					<h2>... is a commodity</h2>
+					<p>Distributed computing for everyone</p>
+					<p>Data processing cost is (relatively) ridiculous</p>
+				</div>
+				</section>
+
+
+				<section>
+					<h2>Logs for everyone</h2>
+					<p>Devs</p>
+					<p>Ops</p>
+					<p>Business</p>
+				</section>
+
+				<section>
+					<h2>What do all these guys want?</h2>
+				</section>
+
+				<section>
+					<h2>Developers</h2>
+					<p>Debug</p>
+					<p>Test</p>
+				</section>
+
+				<section>
+					<h2>Ops</h2>
+					<p>System failures</p>
+					<p>Performance bottlenecks</p>
+					<p>Deployment effects/consequences</p>
+				</section>
+
+				<section>
+					<h2>Business</h2>
+					<p class="fragment">$$$</p>
+					<p class="fragment">$$$</p>
+					<p class="fragment">Analyze data, get insights, detect patterns, predict the future...</p>
+				</section>
+
+				<section>
+					<h2>Can application logs help all these guys?</h2>
+					<small>(yes)</small>
+				</section>
+
+				<section>
+					<h2>Developers</h2>
+					<p>It's a good idea to let developers debug as they like</p>
+					<p>just give them the right tools</p>
+					<p>... but teach them basics about logging</p>
+					
+				</section>
+				<section>
+					<h2>Logs for Developers</h2>
+					<img src="img/logs_bad_content.png" class=".stretch"></img>
+				</section>
+				<section>
+					<h2>Logs for Developers</h2>
+					<img src="img/logs_bad_content_2.png" class=".stretch"></img>
+				</section>
+
+
+				<section>
+					<h2>Logs for Ops</h2>
+					<p>Metrics aggregates</p>
+					<p>Internal/Application level latency</p>
+				</section>
+
+				<section>
+					<h2>Logs for Ops</h2>
+					<p>Bottom line: you don't have to use only monitoring solutions, it is very easy to build relevant metrics
+						using (good) logs</p>
+				</section>
+
+				<section>
+					<h2>Logs for Business Operations</h2>
+				
+					<p class="fragment">Application logs are a powerful weapon</p>
+					<p class="fragment">But you will need data scientists/engineers</p>
+					<p class="fragment">In our business: good data analysis can grow our revenues by two-digits percentages</p>
+					
+				</section>
+
+				<section>
+					<h2>Let's talk architecture</h2>
+				</section>
+
+				<section>
+					<h2>Centralization</h2>
+				</section>
+				<section>
+						<h2>Scalability</h2>
+						
+					</section>
+				<section>
+						<h2>Scalability</h2>
+						<img src="img/archi_scaling_example_1.png" class=".stretch"></img>
+					</section>
+					<section>
+						<h2>Scalability</h2>
+						<img src="img/archi_scaling_example_2.png" class=".stretch"></img>
+					</section>
+					<section>
+						<h2>Scalability</h2>
+						<img src="img/archi_scaling_example_end.png" class=".stretch"></img>
+					</section>
+				
+
+				<section>
+					<h2>How does it apply to logs?</h2>
+					<h2>And... What is a log anyway?</h2>
+					<p>Data</p>
+					<p>Timestamp</p>
+					<p>And a source.</p>
+					<p class="fragment">We try here to build the destination</p>
+				</section>
+
+				<section>
+					<h2>How does it apply to logs?</h2>
+					<p>Logs is a constant stream of time-ordered information</p>
+				</section>
+
+				<section>
+					<h2>How does it apply to logs?</h2>
+					<p>Logs are directly and linearly linked to your application load, in terms of frequency and size</p>
+				</section>
+
+				<section>
+					<h2>How does it apply to logs?</h2>
+					<p>Your application scales and your logs don't? </p>
+					<p class="fragment">They are useless</p>
+				</section>
+				<section>
+						<h2>Let's build a log system</h2>
+				</section>
+				<section>
+					<h2>Let's build a log system</h2>
+					<img src="img/LoggingArchitecture_page1.png" class=".stretch"></img>
+				</section>
+				<section>
+						<h2>Let's build a log system</h2>
+						<h2>Growth?</h2>
+				</section>
+				<section>
+					<h2>Let's build a log system</h2>
+					<p>Just add capacity</p>
+						<img src="img/LoggingArchitecture_page2.png" class=".stretch"></img>
+				</section>
+				<section>
+					<h2>You don't want to go that way</h2>
+					<p>(that's called vertical scaling)</p>
+				</section>
+
+
+				<section>
+					<h2>You can't handle this kind of growth</h2>
+					<img src="img/launch_pq_eu_2.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Let's build a better log system</h2>
+					<img src="img/LoggingArchitecture_page3.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Let's build a better log system</h2>
+					<img src="img/LoggingArchitecture_page4.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Let's build a better log system</h2>
+					<img src="img/LoggingArchitecture_page5.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Let's build a better log system</h2>
+					<img src="img/LoggingArchitecture_page6.png" class=".stretch"></img>
+				</section>
+
+
+				<section>
+					<h2>Let's build a better log system</h2>
+					<img src="img/LoggingArchitecture_page7.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>We need storage</h2>
+					<img src="img/LoggingArchitecture_page8.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>We need storage</h2>
+					<p>Blob/Object storage?</p>
+					<p>Database?</p>
+				</section>
+
+				<section>
+					<h2>We need a Front End</h2>
+					<img src="img/LoggingArchitecture_page9.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>We need a Front End</h2>
+					<p>Polling?</p>
+					<p>Push?</p>
+				</section>
+
+				<section>
+					<h2>We need a user interface</h2>
+					<img src="img/LoggingArchitecture_page10.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Interface</h2>
+
+					<p class="fragment">true nerds don't need interface, come on!</p>
+						<p class="fragment">grep/awk/sed are enough, no?
+							<img src="img/grep.png" class=".stretch"></img>	</p>
+				</section>
+
+				<section>
+					<h1>NOPE.</h1>
+				</section>
+
+				<section>
+					<h2>Interface</h2>
+					<p>Ideal: one interface to rule them all</p>
+					<p>Devs and Ops can search inside it and see the details</p>
+					<p>Business team can do some dashboarding and aggregates</p>
+				</section>
+
+				<section>
+					<h2>Implementation</h2>
+					<p>Commercial SAAS solutions: Papertrail, Sumologic, Loggly...</p>
+					<p>OSS: Logstash + (Elasticsearch (+ Kibana))</p>
+				</section>
+
+				<section>
+					<h2>Why Logstash?</h2>
+					<p>Ultra flexible via plugins (and open source)</p>
+					<p>Built by devops who know how painful it is to read logs at 4AM</p>
+				</section>
+
+				<section>
+					<h2>What is a Logstash instance? (1/2)</h2>
+					<p>Gets/Receives data</p>
+					<p>Optionally transforms/filters/aggregate/rejects the data</p>
+					<p>Outputs data</p>
+					<p>Basically, an ETL for logs</p>
+				</section>
+
+				<section>
+					<h2>What is a Logstash instance? (2/2)</h2>
+					<p>Configured via a simple text file</p>
+					<img src="img/logstashconf.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Elasticsearch + Kibana</h2>
+					<p>Logstash's default database is Elasticsearch</p>
+					<p>Kibana is a web interface built to query Elastisearch and particularly Logstash data</p>
+					<p>It's gorgeous, well designed and works out of the box with Logstash</p>
+				</section>
+
+				<section>
+					<h2>Kibana</h2>
+					<img class="fragment" src="img/kibana_screenshot.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Implementation</h2>
+					<img class="fragment" src="img/LoggingArchitecture_page12.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Are we done?</h2>
+					<p class="fragment">nope.</p>
+					<img class="fragment" src="img/LoggingArchitecture_page13.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>2 problems left</h2>
+					<p>How do the logs go from apps to logstash?</p>
+					<p>Is one receiver a good idea?</p>
+					<img  src="img/LoggingArchitecture_page13.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Introducing a message broker</h2>
+					<p>Acts as a buffer between apps and receivers</p>
+					<p>My choice: Redis</p>
+					<img src="img/LoggingArchitecture_page14.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Shippers everywhere</h2>
+					<p>Shippers push logs to the broker</p>
+					<p>They either get data from the application, or pull logs from appended files</p>
+				</section>
+
+				<section>
+					<h2>Log backlog</h2>
+					<p>(no pun intended)</p>
+					<img src="img/logs_backlog.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Thank you, horizontal scaling</h2>
+					<img src="img/LoggingArchitecture_page15.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h2>Analytics</h2>
+					<img src="img/analytics.png" class=".stretch"></img>
+				</section>
+
+				<section>
+					<h1>Thank You</h1>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				width: 1024,
+ 			   	height: 900,
+ 			    margin: 0.1,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'concave', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
